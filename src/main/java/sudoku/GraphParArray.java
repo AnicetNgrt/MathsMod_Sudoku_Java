@@ -1,13 +1,15 @@
 package sudoku;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 // On implémente les graphes en utilisant des
 // arraylist car leur complexité en accès et en
 // ajout est constante
 public class GraphParArray implements Graph {
 
-    public ArrayList<Integer[]> liaisons = new ArrayList();
+    private ArrayList<Integer[]> liaisons = new ArrayList<Integer[]>();
 
     // Pire cas O(n), meilleur cas O(1), cas moyen O(n)
 	public boolean sontConnectés(int sommet1, int sommet2) {
@@ -24,44 +26,43 @@ public class GraphParArray implements Graph {
     }
 
     // O(1) pour chaque sommet
-	public void connecterMultiple(int sommet, int[] sommets) {
-        for(int s:sommets) {
+	public void connecterMultiple(int sommet, Set<Integer> sommets) {
+        for(Integer s:sommets) {
             connecterBinaire(sommet, s);
         }
     }
 
 	// O(n)
-	public int[][] listeLiaisons() {
-        int[][] liaisons = new int[this.liaisons.size()][2];
+	public Set<Integer[]> listeLiaisons() {
+        Set<Integer[]> liaisons = new HashSet<Integer[]>();
         for(int i = 0; i < this.liaisons.size(); i++) {
-            liaisons[i][0] = this.liaisons.get(i)[0];
-            liaisons[i][1] = this.liaisons.get(i)[1];
+            liaisons.add(new Integer[] {this.liaisons.get(i)[0], this.liaisons.get(i)[1]});
         }
         return liaisons;
     }
 
-    // Complexité à calculer (mais c'est pas terrible)
-	public int[] listeSommets() {
-        int[] sommets = new int[liaisons.size()*2];
-        int nbSommets = 0;
+    // Meilleur cas O(n), cas moyen O(n), pire cas O(n²)
+	public Set<Integer> listeSommets() {
+        HashSet<Integer> sommets = new HashSet();
         for(int i = 0; i < liaisons.size(); i++) {
             int sommet1 = liaisons.get(i)[0];
             int sommet2 = liaisons.get(i)[1];
-            int j = 0;
-            boolean contientDejaSommet1 = false;
-            while(sommets[j] != sommet1 && j < nbSommets)
-                if(sommets[j++] == sommet1) contientDejaSommet1 = true;
-            if(contientDejaSommet1) sommets[nbSommets++] = sommet1;
-            j = 0;
-            boolean contientDejaSommet2 = false;
-            while(sommets[j] != sommet2 && j < nbSommets)
-                if(sommets[j++] == sommet2) contientDejaSommet2 = true;
-            if(contientDejaSommet2) sommets[nbSommets++] = sommet2;
+            sommets.add(sommet1);
+            sommets.add(sommet2);
         }
-        int[] listeSommetsTronquée = new int[nbSommets];
-        for(int i = 0; i < nbSommets; i++) {
-            listeSommetsTronquée[i] = sommets[i];
+        return sommets;
+    }
+
+    // Meilleur cas O(n), cas moyen O(n), pire cas O(n²)
+    public Set<Integer> listeLiaisonsSommet(int sommet) {
+        HashSet<Integer> liaisons = new HashSet<Integer>();
+        for(int i = 0; i < this.liaisons.size(); i++) {
+            int nouvLiaisonPotentielle = this.liaisons.get(i)[1];
+            if(this.liaisons.get(i)[1] == sommet) {
+                nouvLiaisonPotentielle = this.liaisons.get(i)[0];
+            }
+            liaisons.add(nouvLiaisonPotentielle);
         }
-        return listeSommetsTronquée;
+        return liaisons;
     }
 }

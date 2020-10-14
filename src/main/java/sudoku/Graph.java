@@ -1,5 +1,7 @@
 package sudoku;
 
+import java.util.Set;
+
 /*
 Interface représentant les méthodes (=fonctions)
 propre à un Graphe et que toutes les implémentations
@@ -16,9 +18,9 @@ public interface Graph {
 	//Savoir si deux sommets sont connectés
 	public boolean sontConnectés(int sommmet1, int sommet2);
 	public void connecterBinaire(int sommet1, int sommet2);
-	public void connecterMultiple(int sommet, int[] sommets);
-	//Donner une liste des liaisons entre sommets
-	public int[][] listeLiaisons();
+	public void connecterMultiple(int sommet, Set<Integer> sommets);
+	public Set<Integer[]> listeLiaisons();
+	public Set<Integer> listeLiaisonsSommet(int sommet);
 	//Donner une liste des sommets
-	public int[] listeSommets();
+	public Set<Integer> listeSommets();
 }
