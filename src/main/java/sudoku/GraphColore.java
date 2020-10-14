@@ -1,3 +1,5 @@
+package sudoku;
+
 /*
 Interface représentant les méthodes (=fonctions)
 propre à un Graphe Coloré et que toutes les implémentations

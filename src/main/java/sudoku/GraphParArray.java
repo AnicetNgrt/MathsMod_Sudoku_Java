@@ -1,3 +1,5 @@
+package sudoku;
+
 import java.util.ArrayList;
 
 // On implémente les graphes en utilisant des
@@ -9,7 +11,7 @@ public class GraphParArray implements Graph {
 
     // Pire cas O(n), meilleur cas O(1), cas moyen O(n)
 	public boolean sontConnectés(int sommet1, int sommet2) {
-        for(int[] liaison: liaisons) {
+        for(Integer[] liaison: liaisons) {
             if(liaison[0] == sommet1 && liaison[1] == sommet2) return true;
             if(liaison[1] == sommet1 && liaison[0] == sommet2) return true;
         }
