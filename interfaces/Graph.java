@@ -12,9 +12,9 @@ Voir cela comme un cahier des charges
 
 public interface Graph {
 	//Savoir si deux sommets sont connectés
-	public sontConnectés(int sommmet1, int sommet2);
-	public connecterBinaire(int sommet1, int sommet2);
-	connecterMultiple(int sommet, int[] sommets);
+	public boolean sontConnectés(int sommmet1, int sommet2);
+	public void connecterBinaire(int sommet1, int sommet2);
+	public void connecterMultiple(int sommet, int[] sommets);
 	//Donner une liste des liaisons entre sommets
 	public int[][] listeLiaisons();
 	//Donner une liste des sommets
