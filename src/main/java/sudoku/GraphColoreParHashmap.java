@@ -4,15 +4,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class GraphColoreParHashmap extends GraphParArray implements GraphColore {
     private HashMap<Integer, Integer> couleurs = new HashMap<Integer, Integer>();
     
-    @Override
     public void connecterBinaire(int sommet1, int sommet2) {
         super.connecterBinaire(sommet1, sommet2);
         if (couleurs.get(sommet1) == null)
@@ -23,13 +22,10 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
 
     public int[][] listeSommetsColorés() {
         int[][] sommetsColorés = new int[couleurs.size()][2];
-        Iterator<Entry<Integer, Integer>> it = couleurs.entrySet().iterator();
         int i = 0;
-        while (it.hasNext()) {
-            Map.Entry<Integer, Integer> pair = it.next();
+        for(Map.Entry<Integer, Integer> pair: couleurs.entrySet()) {
             sommetsColorés[i][0] = pair.getKey();
             sommetsColorés[i][1] = pair.getValue();
-            it.remove();
             i++;
         }
         return sommetsColorés;
@@ -45,7 +41,7 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
 
 	public boolean estCouleurCorrecte(int sommet, int couleur) {
         if(couleur == -1) return true;
-        Set<Integer> liaisons = listeLiaisonsSommet(sommet);
+        List<Integer> liaisons = listeLiaisonsSommet(sommet);
         for(int l:liaisons) {
             int c = couleurs.get(l);
             if(c != -1 && c == couleur) return false;
@@ -54,26 +50,20 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
     }
 
 	public boolean estColorationCorrecte() {
-        Set<Integer> sommets = listeSommets();
+        List<Integer> sommets = listeSommets();
         for(int s:sommets)
             if(!estCouleurCorrecte(s, couleurs.get(s))) return false;
         return true;
     }
 
-    /** 
-     * @TODO
-     * */
 	public int nbColorationsCorrectesPossibles() {
         return -1;
     }
 
 	public int nbCouleurs() {
         HashSet<Integer> set = new HashSet<Integer>();
-        Iterator<Entry<Integer, Integer>> it = couleurs.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, Integer> pair = it.next();
+        for(Map.Entry<Integer, Integer> pair: couleurs.entrySet()) {
             if(pair.getValue() != -1) set.add(pair.getValue());
-            it.remove();
         }
         return set.size();
     }
@@ -95,5 +85,11 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
     private static String numCaseToString(int numCase) {
         String s = numCase / 1000 + "|" + numCase % 1000;
         return s;
+    }
+
+    public boolean estSommetColoré(int sommet) {
+        if(couleurs.get(sommet) == null) return false;
+        if(couleurs.get(sommet) == -1) return false;
+        return true;
     }
 }

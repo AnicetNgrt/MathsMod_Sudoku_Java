@@ -1,7 +1,9 @@
 package sudoku;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 // On implémente les graphes en utilisant des
@@ -34,17 +36,17 @@ public class GraphParArray implements Graph {
 
     // O(n)
     // Optimisation à l'aide d'HashSets
-	public Set<Integer[]> listeLiaisons() {
+	public List<Integer[]> listeLiaisons() {
         Set<Integer[]> liaisons = new HashSet<Integer[]>();
         for(int i = 0; i < this.liaisons.size(); i++) {
             liaisons.add(new Integer[] {this.liaisons.get(i)[0], this.liaisons.get(i)[1]});
         }
-        return liaisons;
+        return new ArrayList<Integer[]>(liaisons);
     }
 
     // O(n)
     // Optimisation à l'aide d'HashSets
-	public Set<Integer> listeSommets() {
+	public List<Integer> listeSommets() {
         HashSet<Integer> sommets = new HashSet<Integer>();
         for(int i = 0; i < liaisons.size(); i++) {
             int sommet1 = liaisons.get(i)[0];
@@ -52,11 +54,11 @@ public class GraphParArray implements Graph {
             sommets.add(sommet1);
             sommets.add(sommet2);
         }
-        return sommets;
+        return new ArrayList<Integer>(sommets);
     }
 
     // O(n)
-    public Set<Integer> listeLiaisonsSommet(int sommet) {
+    public List<Integer> listeLiaisonsSommet(int sommet) {
         HashSet<Integer> liaisons = new HashSet<Integer>();
         for(int i = 0; i < this.liaisons.size(); i++) {
             if(this.liaisons.get(i)[1] == sommet) {
@@ -67,6 +69,6 @@ public class GraphParArray implements Graph {
                 liaisons.add(nouvLiaison);
             }
         }
-        return liaisons;
+        return new ArrayList<Integer>(liaisons);
     }
 }

@@ -1,5 +1,6 @@
 package sudoku;
 
+import java.util.List;
 import java.util.Set;
 
 /*
@@ -19,8 +20,8 @@ public interface Graph {
 	public boolean sontConnectés(int sommmet1, int sommet2);
 	public void connecterBinaire(int sommet1, int sommet2);
 	public void connecterMultiple(int sommet, Set<Integer> sommets);
-	public Set<Integer[]> listeLiaisons();
-	public Set<Integer> listeLiaisonsSommet(int sommet);
+	public List<Integer[]> listeLiaisons();
+	public List<Integer> listeLiaisonsSommet(int sommet);
 	//Donner une liste des sommets
-	public Set<Integer> listeSommets();
+	public List<Integer> listeSommets();
 }
