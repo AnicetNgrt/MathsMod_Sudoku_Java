@@ -1,5 +1,6 @@
 package sudoku;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,6 +60,9 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
         return true;
     }
 
+    /** 
+     * @TODO
+     * */
 	public int nbColorationsCorrectesPossibles() {
         return -1;
     }
@@ -72,5 +76,24 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
             it.remove();
         }
         return set.size();
+    }
+
+    public String toString() {
+        String s = "";
+        for(int[] colorations:listeSommetsColorés()) {
+            s += "som: "+numCaseToString(colorations[0])+" col: "+colorations[1]+" lia: [";
+            Object[] liaisons = listeLiaisonsSommet(colorations[0]).toArray();
+            Arrays.sort(liaisons);
+            for(Object sommet: liaisons){
+                s += numCaseToString(((int) sommet))+", ";
+            }
+            s += "]\n";
+        }
+        return s;
+    }
+
+    private static String numCaseToString(int numCase) {
+        String s = numCase / 1000 + "|" + numCase % 1000;
+        return s;
     }
 }

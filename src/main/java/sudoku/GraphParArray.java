@@ -32,7 +32,8 @@ public class GraphParArray implements Graph {
         }
     }
 
-	// O(n)
+    // O(n)
+    // Optimisation à l'aide d'HashSets
 	public Set<Integer[]> listeLiaisons() {
         Set<Integer[]> liaisons = new HashSet<Integer[]>();
         for(int i = 0; i < this.liaisons.size(); i++) {
@@ -41,9 +42,10 @@ public class GraphParArray implements Graph {
         return liaisons;
     }
 
-    // Meilleur cas O(n), cas moyen O(n), pire cas O(n²)
+    // O(n)
+    // Optimisation à l'aide d'HashSets
 	public Set<Integer> listeSommets() {
-        HashSet<Integer> sommets = new HashSet();
+        HashSet<Integer> sommets = new HashSet<Integer>();
         for(int i = 0; i < liaisons.size(); i++) {
             int sommet1 = liaisons.get(i)[0];
             int sommet2 = liaisons.get(i)[1];
@@ -53,15 +55,17 @@ public class GraphParArray implements Graph {
         return sommets;
     }
 
-    // Meilleur cas O(n), cas moyen O(n), pire cas O(n²)
+    // O(n)
     public Set<Integer> listeLiaisonsSommet(int sommet) {
         HashSet<Integer> liaisons = new HashSet<Integer>();
         for(int i = 0; i < this.liaisons.size(); i++) {
-            int nouvLiaisonPotentielle = this.liaisons.get(i)[1];
             if(this.liaisons.get(i)[1] == sommet) {
-                nouvLiaisonPotentielle = this.liaisons.get(i)[0];
+                int nouvLiaison = this.liaisons.get(i)[0];
+                liaisons.add(nouvLiaison);
+            } else if(this.liaisons.get(i)[0] == sommet) {
+                int nouvLiaison = this.liaisons.get(i)[1];
+                liaisons.add(nouvLiaison);
             }
-            liaisons.add(nouvLiaisonPotentielle);
         }
         return liaisons;
     }
