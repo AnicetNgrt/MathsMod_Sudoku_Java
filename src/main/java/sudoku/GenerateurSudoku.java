@@ -3,9 +3,10 @@ package sudoku;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class GenerateurSudoku {
+
+    public static final int PALLIER_ABANDON = 999999;
 
     //Variable de cache pour ne pas recalculer les contraintes quand ça a déjà été fait
     private HashMap<Integer, List<List<Integer>>> groupesDeContraintesParTaille = new HashMap<>();
@@ -40,6 +41,7 @@ public class GenerateurSudoku {
     public void générerContraintesSudoku(Sudoku sudoku) {
         int taille = sudoku.taille;
         GraphColore graph = sudoku.graph;
+        for(int i = 0; i < taille*taille; graph.ajouterCouleurPossible(i++));
         // On crée des groupes de contraintes pour chaque ligne/colonne/zone
         // Sauf si on les a déjà crées par le passé (optimisation)
         groupesDeContraintes = groupesDeContraintesParTaille.get(taille);
@@ -59,21 +61,16 @@ public class GenerateurSudoku {
 		}
     }
 
-    public void générerValeursDépartSudoku(Sudoku sudoku, int nb) {
-        List<Integer> listeSommets = sudoku.graph.listeSommets();
-        for(int i = 0; i < nb;) {
-            int numCase = listeSommets.get(entierAléatoireIntervale(0, listeSommets.size()-1));
-            if(!sudoku.graph.estSommetColoré(numCase)) {
-                int couleur = entierAléatoireIntervale(0, sudoku.taille*sudoku.taille-1);
-                int essais = 0;
-                while(!sudoku.graph.estCouleurCorrecte(numCase, couleur)) {
-                    couleur = entierAléatoireIntervale(0, sudoku.taille*sudoku.taille-1);
-                    if(essais++ > sudoku.taille*sudoku.taille*1000) break;
-                }
-                sudoku.graph.colorerSommet(numCase, couleur);
-                i++;
-            }
+    public void générerValeursDépartSudoku(SolveurSudoku solveur, Sudoku sudoku, int nb) {
+        sudoku.graph.réinitialiser();
+
+        List<Integer> casesEntropieMin = sudoku.casesEntropieMinNonRésolues(new ArrayList<Integer>());
+        if(casesEntropieMin.size() == 0 || 0 >= nb) {
+            System.out.println("Déjà fini");
+            return;
         }
+
+        solveur.trouverCheminSuivant(sudoku, nb, 0, casesEntropieMin);
     }
 
     public static int encoderCoordonnées(int row, int col) {

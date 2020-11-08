@@ -1,23 +1,28 @@
 package sudoku;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import java.util.Iterator;
+import java.util.Set;
 import java.util.List;
 
-public class GraphColoreParHashmap extends GraphParArray implements GraphColore {
+public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
+    private Set<Integer> couleursPossibles = new HashSet<Integer>();
     private HashMap<Integer, Integer> couleurs = new HashMap<Integer, Integer>();
+    private HashMap<Integer, Set<Integer>> couleursCorrectes = new HashMap<Integer, Set<Integer>>();
     
     public void connecterBinaire(int sommet1, int sommet2) {
         super.connecterBinaire(sommet1, sommet2);
-        if (couleurs.get(sommet1) == null)
+        if (couleurs.get(sommet1) == null) {
             couleurs.put(sommet1, -1);
-        if (couleurs.get(sommet2) == null)
+            couleursCorrectes.put(sommet1, new HashSet<Integer>(couleursPossibles));
+        }
+        if (couleurs.get(sommet2) == null) {
             couleurs.put(sommet2, -1);
+            couleursCorrectes.put(sommet2, new HashSet<Integer>(couleursPossibles));
+        }
     }
 
     public int[][] listeSommetsColorés() {
@@ -33,20 +38,23 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
 
 	public void colorerSommet(int sommet, int couleur) {
         couleurs.put(sommet, couleur);
+        if(couleur != -1) {
+            for(int l:listeLiaisonsSommet(sommet))
+                couleursCorrectes.get(l).remove(couleur);
+        }
     }
 
-	public void décolorerSommet(int sommet, int couleur) {
+	public void décolorerSommet(int sommet) {
+        if(couleurs.get(sommet) != -1) {
+            for(int l:listeLiaisonsSommet(sommet))
+                couleursCorrectes.get(l).add(couleurs.get(sommet));
+        }
         couleurs.put(sommet, -1);
     }
 
+    //O(1)
 	public boolean estCouleurCorrecte(int sommet, int couleur) {
-        if(couleur == -1) return true;
-        List<Integer> liaisons = listeLiaisonsSommet(sommet);
-        for(int l:liaisons) {
-            int c = couleurs.get(l);
-            if(c != -1 && c == couleur) return false;
-        }
-        return true;
+        return couleursCorrectes.get(sommet).contains(couleur);
     }
 
 	public boolean estColorationCorrecte() {
@@ -91,5 +99,34 @@ public class GraphColoreParHashmap extends GraphParArray implements GraphColore 
         if(couleurs.get(sommet) == null) return false;
         if(couleurs.get(sommet) == -1) return false;
         return true;
+    }
+
+    //O(n²) n = taille sudoku
+    public Set<Integer> couleursCorrectes(int sommet) {
+        return couleursCorrectes.get(sommet);
+    }
+
+    public void réinitialiser() {
+        for(int numCase:listeSommets()) {
+            décolorerSommet(numCase);
+        }
+    }
+
+    public GraphColore dupliquer() {
+        GraphColoreParHashmap dup = new GraphColoreParHashmap();
+        dup.couleurs = new HashMap<Integer, Integer>(couleurs);
+        dup.liaisons = new ArrayList<Integer[]>(liaisons);
+        dup.liaisonsDirectes = new HashMap<>(liaisonsDirectes);
+        dup.couleursCorrectes = new HashMap<>(couleursCorrectes);
+        dup.couleursPossibles = new HashSet<>(couleursPossibles);
+        return dup;
+    }
+
+    public Set<Integer> couleursPossibles() {
+        return couleursPossibles;
+    }
+
+    public void ajouterCouleurPossible(int couleur) {
+        couleursPossibles.add(couleur);
     }
 }

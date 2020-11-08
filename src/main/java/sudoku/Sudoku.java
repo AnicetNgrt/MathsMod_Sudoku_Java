@@ -1,12 +1,46 @@
 package sudoku;
 
 import java.lang.StringBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class Sudoku {
+
+    public static String couleurVide = ANSI.PURPLE;
+    public static String couleurRempli = ANSI.CYAN;
+    public static String couleurZone = ANSI.GREEN;
+
     public int taille = 3;
     public GraphColore graph = null;
-    public boolean sontContraintesGénérées = false;
 
+    public int[] listeCouleurs() {
+        int[] couleurs = new int[taille*taille];
+        for(int i = 0; i < taille*taille; couleurs[i] = i++);
+        return couleurs;
+    }
+
+    public List<Integer> casesEntropieMinNonRésolues(List<Integer> listeNoire) {
+        int entropieMin = taille*taille;
+        ArrayList<Integer> cases = new ArrayList<Integer>();
+        for (int i = 0; i < taille*taille; i++) {
+            for (int j = 0; j < taille*taille; j++) {
+                int numCase = GenerateurSudoku.encoderCoordonnées(i, j);
+                if(graph.estSommetColoré(numCase)) 
+                    continue;
+                Set<Integer> correctes = graph.couleursCorrectes(numCase);
+                
+                if(correctes.size() == entropieMin && !listeNoire.contains(numCase)) {
+                    cases.add(numCase);
+                } else if(correctes.size() < entropieMin && !listeNoire.contains(numCase)) {
+                    cases = new ArrayList<Integer>();
+                    entropieMin = correctes.size();
+                    cases.add(numCase);
+                }
+            }
+        }
+        return cases;
+    }
 
     public String[][] toBuffer() {
         final int height = taille*taille*2 + 1;
@@ -51,31 +85,31 @@ public class Sudoku {
                         else if(estCentre) {
                             buffer[debutLigne+j][debutCol+i] = String.format(" %"+Integer.toString(cellLength)+"s ", couleur == -1 ? "?" : couleur);
                             if(couleur != -1)
-                                buffer[debutLigne+j][debutCol+i] = ANSI.YELLOW+buffer[debutLigne+j][debutCol+1]+ANSI.BLUE;
+                                buffer[debutLigne+j][debutCol+i] = couleurRempli+buffer[debutLigne+j][debutCol+1]+couleurVide;
                         }
     
                         if(x % taille == 0 && estBordGauche && x != 0) {
-                            buffer[debutLigne+j][debutCol+i] = ANSI.GREEN+buffer[debutLigne+j][debutCol+i]+ANSI.BLUE;
+                            buffer[debutLigne+j][debutCol+i] = couleurZone+buffer[debutLigne+j][debutCol+i]+couleurVide;
                         }
                         if(y % taille == taille-1 && estBordBas && y != taille*taille-1) {
-                            buffer[debutLigne+j][debutCol+i] = ANSI.GREEN+buffer[debutLigne+j][debutCol+i]+ANSI.BLUE;
+                            buffer[debutLigne+j][debutCol+i] = couleurZone+buffer[debutLigne+j][debutCol+i]+couleurVide;
                         }
                         if(y % taille == 0 && estBordHaut && y != 0) {
-                            buffer[debutLigne+j][debutCol+i] = ANSI.GREEN+buffer[debutLigne+j][debutCol+i]+ANSI.BLUE;
+                            buffer[debutLigne+j][debutCol+i] = couleurZone+buffer[debutLigne+j][debutCol+i]+couleurVide;
                         }
                     }
                 }
             }  
         }
 
-        buffer[0][0] = ANSI.BLUE + buffer[0][0];
+        buffer[0][0] = couleurVide + buffer[0][0];
         buffer[height-1][width-1] += ANSI.RESET;
         return buffer;
     }
 
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("\n");
         String[][] buffer = toBuffer();
 
         for(String[] line:buffer) {
@@ -87,5 +121,12 @@ public class Sudoku {
         }
 
         return sb.toString();
+    }
+
+    public Sudoku dupliquer() {
+        Sudoku dup = new Sudoku();
+        dup.taille = taille;
+        dup.graph = graph.dupliquer();
+        return dup;
     }
 }

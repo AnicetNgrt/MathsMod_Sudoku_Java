@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class App {
+    private static Sudoku sudoku = null;
     // Initialisation du module de génération
     private static GenerateurSudoku générateur = new GenerateurSudoku();
-    private static Sudoku sudoku = null;
+    // Initialisation du module de résolution
+    private static SolveurSudoku solveur = new SolveurSudoku();
     // Initialisation du module de saisie utilisateur
     private static Scanner scan = new Scanner(System.in);
     private static String choix = "acceuil";
@@ -15,8 +17,6 @@ public class App {
     public static void main(String[] args) {
         while (choix != "sortie") {
             effacerEcran();
-            if(sudoku != null && sudoku.graph != null)
-                System.out.println(sudoku.graph.listeSommets().size());
             switch (choix) {
                 case "générer":
                     génération();
@@ -35,6 +35,9 @@ public class App {
                     break;
                 case "générerChiffresDépart":
                     générerChiffresDépart();
+                    break;
+                case "résoudre":
+                    résoudre();
                     break;
             }
         }
@@ -120,27 +123,81 @@ public class App {
     }
 
     public static void générerChiffresDépart() {
-        utiliserStyle("generer");
-        ANSI.afficherH1("Générer un sudoku");
-        ANSI.afficherH2("Génération des chiffres de départ");
+        do {
+            utiliserStyle("generer");
+            ANSI.afficherH1("Générer un sudoku");
+            ANSI.afficherH2("Génération des chiffres de départ");
 
-        int nbMax = sudoku.taille*sudoku.taille*sudoku.taille*sudoku.taille;
-        int nb = -1;
-        while(nb < 0 || nb > nbMax) {
-            ANSI.afficherQuestion("Combien de chiffres de départ faut-il générer ? ("+nbMax+" max)");
+            int nbMax = sudoku.taille*sudoku.taille*sudoku.taille*sudoku.taille;
+            int nb = -1;
+            while(nb < 0 || nb > nbMax) {
+                ANSI.afficherQuestion("Combien de chiffres de départ faut-il générer ? ("+nbMax+" max)");
+                ANSI.afficherPrompt();
+                nb = scan.nextInt();
+            }
+
+            do {
+                générateur.générerValeursDépartSudoku(solveur, sudoku, nb);
+                System.out.println();
+                System.out.println(sudoku);
+
+                ANSI.afficherQuestion("Que voulez-vous faire ?");
+                ANSI.afficherChoix("1", "Résoudre en entier");
+                ANSI.afficherChoix("2", "Regénérer un sudoku de même taille");
+                ANSI.afficherChoix("3", "Régénérer ce sudoku");
+                ANSI.afficherChoix("4", "Revenir à l'acceuil");
+                ANSI.afficherPrompt();
+                switch (scan.next()) {
+                    case "1":
+                        choix = "résoudre";
+                        break;
+                    case "2":
+                        choix = "generer";
+                        break;
+                    case "3":
+                        choix = "regenerer";
+                        break;
+                    case "4":
+                        choix = "acceuil";
+                        break;
+                }
+            } while(choix == "regenerer");
+        } while(choix == "generer");
+    }
+
+    public static void résoudre() {
+        do {
+            Sudoku sudokuAvantRésolution = sudoku.dupliquer();
+            utiliserStyle("resoudre");
+            ANSI.afficherH1("Résoudre un sudoku");
+            ANSI.afficherH2("Sudoku de départ");
+            System.out.println();
+            System.out.println(sudoku);
+            ANSI.afficherH2("Résolution par une méthode récursive dite 'Backtracking'");
+            long debut = System.nanoTime();
+            solveur.résoudre(sudoku);
+            long temps = (System.nanoTime() - debut)/1000000l;
+            System.out.println(sudoku);
+            ANSI.afficherTexte("Sudoku résolu en "+temps+"ms");
+
+            ANSI.afficherQuestion("Que voulez-vous faire ?");
+            ANSI.afficherChoix("1", "Résoudre à nouveau");
+            ANSI.afficherChoix("2", "Revenir à l'acceuil");
             ANSI.afficherPrompt();
-            nb = scan.nextInt();
-        }
-
-        générateur.générerValeursDépartSudoku(sudoku, nb);
-        System.out.println(sudoku);
-
-        attendreTouchePressée();
+            switch (scan.next()) {
+                case "1":
+                    choix = "résoudre";
+                    sudoku = sudokuAvantRésolution;
+                    break;
+                case "2":
+                    choix = "acceuil";
+                    break;
+            }
+        } while(choix == "résoudre");
     }
 
     public static void acceuil() {
         utiliserStyle("acceuil");
-
         ANSI.afficherH1("Bienvenue sur le générateur/solveur de Sudokus.");
         ANSI.afficherQuestion("Que voulez-vous faire ?");
         ANSI.afficherChoix("1", "Générer un sudoku");
@@ -197,16 +254,29 @@ public class App {
         switch(nom) {
             case "generer":
                 style.couleurFondH1 = ANSI.YELLOW_BACKGROUND;
+                style.couleurPoliceH1 = ANSI.BLACK;
+                style.couleurFondH2 = ANSI.GREEN_BACKGROUND;
+                style.couleurPoliceH2 = ANSI.BLACK;
+                style.couleurPoliceQuestion = ANSI.BLUE;
+                style.couleurPolicePrompt = ANSI.YELLOW;
+                break;
+            case "resoudre":
+                style.couleurFondH1 = ANSI.CYAN_BACKGROUND;
+                style.couleurPoliceH1 = ANSI.BLACK;
+                style.couleurFondH2 = ANSI.WHITE_BACKGROUND;
+                style.couleurPoliceH2 = ANSI.BLACK;
                 style.couleurPoliceQuestion = ANSI.BLUE;
                 style.couleurPolicePrompt = ANSI.YELLOW;
                 break;
             case "acceuil":
                 style.couleurFondH1 = ANSI.BLUE_BACKGROUND;
+                style.couleurPoliceH1 = ANSI.BLACK;
                 style.couleurPoliceQuestion = ANSI.BLUE;
                 style.couleurPolicePrompt = ANSI.YELLOW;
                 break;
             case "apropos":
                 style.couleurFondH1 = ANSI.PURPLE_BACKGROUND;
+                style.couleurPoliceH1 = ANSI.BLACK;
                 style.couleurPoliceH2 = ANSI.RED;
                 style.couleurPoliceQuestion = ANSI.BLUE;
                 style.couleurPolicePrompt = ANSI.YELLOW;
