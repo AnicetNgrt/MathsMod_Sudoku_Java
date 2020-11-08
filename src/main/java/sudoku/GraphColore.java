@@ -22,7 +22,6 @@ public interface GraphColore extends Graph {
 	public Set<Integer> couleursCorrectes(int sommet);
 	public boolean estColorationCorrecte();
 	public int nbColorationsCorrectesPossibles();
-	public int nbCouleurs();
 	public void réinitialiser();
 	public GraphColore dupliquer();
 	public Set<Integer> couleursPossibles();

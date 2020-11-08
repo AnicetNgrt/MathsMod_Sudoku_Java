@@ -136,6 +136,14 @@ public class App {
                 nb = scan.nextInt();
             }
 
+            int percent = -1;
+            while(percent < 0 || percent >= 100) {
+                ANSI.afficherQuestion("A partir de quel % de progression utiliser la méthode entropique ? ("+100+" max)");
+                ANSI.afficherPrompt();
+                percent = scan.nextInt();
+            }
+            solveur.seuilUtilisationMéthodeEntropique = percent/100f;
+
             do {
                 générateur.générerValeursDépartSudoku(solveur, sudoku, nb);
                 System.out.println();
@@ -173,11 +181,27 @@ public class App {
             ANSI.afficherH2("Sudoku de départ");
             System.out.println();
             System.out.println(sudoku);
+
+            int percent = -1;
+            while(percent < 0 || percent > 100) {
+                ANSI.afficherQuestion("A partir de quel % de progression utiliser la méthode entropique ? ("+100+" max)");
+                ANSI.afficherPrompt();
+                percent = scan.nextInt();
+            }
+            solveur.seuilUtilisationMéthodeEntropique = percent/100f;
+
             ANSI.afficherH2("Résolution par une méthode récursive dite 'Backtracking'");
             long debut = System.nanoTime();
             solveur.résoudre(sudoku);
             long temps = (System.nanoTime() - debut)/1000000l;
             System.out.println(sudoku);
+            boolean correct = sudoku.graph.estColorationCorrecte();
+            if(correct) {
+                ANSI.afficherEnCouleur("Le sudoku est correct", ANSI.GREEN_BACKGROUND, ANSI.BLACK);
+            } else {
+                ANSI.afficherEnCouleur("Le sudoku est incorrect", ANSI.RED_BACKGROUND, ANSI.BLACK);
+            }
+            System.out.println();
             ANSI.afficherTexte("Sudoku résolu en "+temps+"ms");
 
             ANSI.afficherQuestion("Que voulez-vous faire ?");

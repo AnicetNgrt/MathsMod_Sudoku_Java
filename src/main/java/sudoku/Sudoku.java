@@ -20,7 +20,7 @@ public class Sudoku {
         return couleurs;
     }
 
-    public List<Integer> casesEntropieMinNonRésolues(List<Integer> listeNoire) {
+    public List<Integer> casesEntropieMinNonRésolues() {
         int entropieMin = taille*taille;
         ArrayList<Integer> cases = new ArrayList<Integer>();
         for (int i = 0; i < taille*taille; i++) {
@@ -30,13 +30,26 @@ public class Sudoku {
                     continue;
                 Set<Integer> correctes = graph.couleursCorrectes(numCase);
                 
-                if(correctes.size() == entropieMin && !listeNoire.contains(numCase)) {
+                if(correctes.size() == entropieMin) {
                     cases.add(numCase);
-                } else if(correctes.size() < entropieMin && !listeNoire.contains(numCase)) {
+                } else if(correctes.size() < entropieMin) {
                     cases = new ArrayList<Integer>();
                     entropieMin = correctes.size();
                     cases.add(numCase);
                 }
+            }
+        }
+        return cases;
+    }
+
+    public List<Integer> casesEntropieSuffNonRésolues() {
+        ArrayList<Integer> cases = new ArrayList<Integer>();
+        for (int i = 0; i < taille*taille; i++) {
+            for (int j = 0; j < taille*taille; j++) {
+                int numCase = GenerateurSudoku.encoderCoordonnées(i, j);
+                if(graph.estSommetColoré(numCase)) 
+                    continue;
+                cases.add(numCase);
             }
         }
         return cases;

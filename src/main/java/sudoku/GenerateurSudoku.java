@@ -64,13 +64,13 @@ public class GenerateurSudoku {
     public void générerValeursDépartSudoku(SolveurSudoku solveur, Sudoku sudoku, int nb) {
         sudoku.graph.réinitialiser();
 
-        List<Integer> casesEntropieMin = sudoku.casesEntropieMinNonRésolues(new ArrayList<Integer>());
-        if(casesEntropieMin.size() == 0 || 0 >= nb) {
+        List<Integer> cases = sudoku.casesEntropieSuffNonRésolues();
+        if(cases.size() == 0 || 0 >= nb) {
             System.out.println("Déjà fini");
             return;
         }
 
-        solveur.trouverCheminSuivant(sudoku, nb, 0, casesEntropieMin);
+        solveur.trouverCheminSuivant(sudoku, nb, 0, cases);
     }
 
     public static int encoderCoordonnées(int row, int col) {

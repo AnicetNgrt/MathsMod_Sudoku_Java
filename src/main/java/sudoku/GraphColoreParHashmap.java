@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.List;
 
 public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
     private Set<Integer> couleursPossibles = new HashSet<Integer>();
     private HashMap<Integer, Integer> couleurs = new HashMap<Integer, Integer>();
     private HashMap<Integer, Set<Integer>> couleursCorrectes = new HashMap<Integer, Set<Integer>>();
+    private HashMap<Integer, Integer> poidsCouleurs = new HashMap<Integer, Integer>();
     
     public void connecterBinaire(int sommet1, int sommet2) {
         super.connecterBinaire(sommet1, sommet2);
@@ -39,15 +41,30 @@ public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
 	public void colorerSommet(int sommet, int couleur) {
         couleurs.put(sommet, couleur);
         if(couleur != -1) {
-            for(int l:listeLiaisonsSommet(sommet))
+            for(int l:listeLiaisonsSommet(sommet)) {
+                if(poidsCouleurs.get(l*1000 + couleur) == null){
+                    poidsCouleurs.put(l*1000 + couleur, -1);
+                } else {
+                    poidsCouleurs.put(l*1000 + couleur, poidsCouleurs.get(l*1000 + couleur)-1);
+                }
                 couleursCorrectes.get(l).remove(couleur);
+            }
         }
     }
 
 	public void décolorerSommet(int sommet) {
-        if(couleurs.get(sommet) != -1) {
-            for(int l:listeLiaisonsSommet(sommet))
-                couleursCorrectes.get(l).add(couleurs.get(sommet));
+        int couleur = couleurs.get(sommet);
+        if(couleur != -1) {
+            for(int l:listeLiaisonsSommet(sommet)) {
+                if(poidsCouleurs.get(l*1000 + couleur) == null){
+                    poidsCouleurs.put(l*1000 + couleur, 1);
+                } else {
+                    poidsCouleurs.put(l*1000 + couleur, poidsCouleurs.get(l*1000 + couleur)+1);
+                }
+                if(poidsCouleurs.get(l*1000 + couleur) >= 0){
+                    couleursCorrectes.get(l).add(couleur);
+                }
+            }
         }
         couleurs.put(sommet, -1);
     }
@@ -66,14 +83,6 @@ public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
 
 	public int nbColorationsCorrectesPossibles() {
         return -1;
-    }
-
-	public int nbCouleurs() {
-        HashSet<Integer> set = new HashSet<Integer>();
-        for(Map.Entry<Integer, Integer> pair: couleurs.entrySet()) {
-            if(pair.getValue() != -1) set.add(pair.getValue());
-        }
-        return set.size();
     }
 
     public String toString() {
@@ -101,7 +110,7 @@ public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
         return true;
     }
 
-    //O(n²) n = taille sudoku
+    //O(1)
     public Set<Integer> couleursCorrectes(int sommet) {
         return couleursCorrectes.get(sommet);
     }
@@ -117,8 +126,12 @@ public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
         dup.couleurs = new HashMap<Integer, Integer>(couleurs);
         dup.liaisons = new ArrayList<Integer[]>(liaisons);
         dup.liaisonsDirectes = new HashMap<>(liaisonsDirectes);
-        dup.couleursCorrectes = new HashMap<>(couleursCorrectes);
+        dup.couleursCorrectes = new HashMap<>();
+        for(Entry<Integer, Set<Integer>> entry:couleursCorrectes.entrySet()) {
+            dup.couleursCorrectes.put(entry.getKey(), new HashSet<Integer>(entry.getValue()));
+        }
         dup.couleursPossibles = new HashSet<>(couleursPossibles);
+        dup.poidsCouleurs = new HashMap<>(poidsCouleurs);
         return dup;
     }
 
