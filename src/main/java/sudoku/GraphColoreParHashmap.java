@@ -142,4 +142,8 @@ public class GraphColoreParHashmap extends GraphImpl implements GraphColore {
     public void ajouterCouleurPossible(int couleur) {
         couleursPossibles.add(couleur);
     }
+
+    public int couleurSommet(int sommet) {
+        return couleurs.get(sommet);
+    }
 }

@@ -42,7 +42,7 @@ public class Sudoku {
         return cases;
     }
 
-    public List<Integer> casesEntropieSuffNonRésolues() {
+    public List<Integer> casesNonRésolues() {
         ArrayList<Integer> cases = new ArrayList<Integer>();
         for (int i = 0; i < taille*taille; i++) {
             for (int j = 0; j < taille*taille; j++) {

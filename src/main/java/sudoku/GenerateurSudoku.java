@@ -63,14 +63,7 @@ public class GenerateurSudoku {
 
     public void générerValeursDépartSudoku(SolveurSudoku solveur, Sudoku sudoku, int nb) {
         sudoku.graph.réinitialiser();
-
-        List<Integer> cases = sudoku.casesEntropieSuffNonRésolues();
-        if(cases.size() == 0 || 0 >= nb) {
-            System.out.println("Déjà fini");
-            return;
-        }
-
-        solveur.trouverCheminSuivant(sudoku, nb, 0, cases);
+        solveur.résoudre(sudoku, nb);
     }
 
     public static int encoderCoordonnées(int row, int col) {

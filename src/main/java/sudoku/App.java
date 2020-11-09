@@ -8,7 +8,11 @@ public class App {
     // Initialisation du module de génération
     private static GenerateurSudoku générateur = new GenerateurSudoku();
     // Initialisation du module de résolution
-    private static SolveurSudoku solveur = new SolveurSudoku();
+    private static SolveurSudoku[] solveurs = new SolveurSudoku[] {
+        new SolveurBTENTR(),
+        new SolveurBTORDERED(),
+        new SolveurDancingLinks()
+    };
     // Initialisation du module de saisie utilisateur
     private static Scanner scan = new Scanner(System.in);
     private static String choix = "acceuil";
@@ -136,16 +140,9 @@ public class App {
                 nb = scan.nextInt();
             }
 
-            int percent = -1;
-            while(percent < 0 || percent >= 100) {
-                ANSI.afficherQuestion("A partir de quel % de progression utiliser la méthode entropique ? ("+100+" max)");
-                ANSI.afficherPrompt();
-                percent = scan.nextInt();
-            }
-            solveur.seuilUtilisationMéthodeEntropique = percent/100f;
-
             do {
-                générateur.générerValeursDépartSudoku(solveur, sudoku, nb);
+                solveurs[0].modeVerbeux(false);
+                générateur.générerValeursDépartSudoku(solveurs[0], sudoku, nb);
                 System.out.println();
                 System.out.println(sudoku);
 
@@ -182,17 +179,27 @@ public class App {
             System.out.println();
             System.out.println(sudoku);
 
-            int percent = -1;
-            while(percent < 0 || percent > 100) {
-                ANSI.afficherQuestion("A partir de quel % de progression utiliser la méthode entropique ? ("+100+" max)");
+            ANSI.afficherQuestion("Quel algorithme utiliser ?");
+            ANSI.afficherChoix("1", "Résoudre à nouveau");
+            ANSI.afficherChoix("2", "Revenir à l'acceuil");
+            ANSI.afficherPrompt();
+            
+            int i = -1;
+            while(i < 0 || i >= solveurs.length*2) {
+                ANSI.afficherQuestion("Quelle algorithme utiliser ?");
+                for(int j = 0; j < solveurs.length*2; j++) {
+                    ANSI.afficherChoix(Integer.toString(j), solveurs[j/2].nom()+" "+(j%2 == 1 ? "en mode verbeux" : ""));
+                }
                 ANSI.afficherPrompt();
-                percent = scan.nextInt();
+                i = scan.nextInt();
             }
-            solveur.seuilUtilisationMéthodeEntropique = percent/100f;
+            SolveurSudoku solveur = solveurs[i/2];
+            if(i % 2 == 0)
+                solveur.modeVerbeux(false);
 
-            ANSI.afficherH2("Résolution par une méthode récursive dite 'Backtracking'");
+            ANSI.afficherH2("Résolution: "+solveur.nom());
             long debut = System.nanoTime();
-            solveur.résoudre(sudoku);
+            solveur.résoudre(sudoku, sudoku.taille*sudoku.taille*sudoku.taille*sudoku.taille);
             long temps = (System.nanoTime() - debut)/1000000l;
             System.out.println(sudoku);
             boolean correct = sudoku.graph.estColorationCorrecte();

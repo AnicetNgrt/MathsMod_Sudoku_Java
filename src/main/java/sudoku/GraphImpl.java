@@ -29,7 +29,7 @@ public class GraphImpl implements Graph {
         if(l1 != null) {
             connectés |= l1.contains(sommet2);
         }
-        return false;
+        return connectés;
     }
 
     // O(1)
@@ -75,7 +75,6 @@ public class GraphImpl implements Graph {
 
     // O(1)
     public List<Integer> listeLiaisonsSommet(int sommet) {
-        HashSet<Integer> liaisons = new HashSet<Integer>();
         if(liaisonsDirectes.get(sommet) == null) {
             return new ArrayList<Integer>();
         }

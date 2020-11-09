@@ -17,6 +17,7 @@ public interface GraphColore extends Graph {
 	public int[][] listeSommetsColorés();
 	public void colorerSommet(int sommet, int couleur);
 	public void décolorerSommet(int sommet);
+	public int couleurSommet(int sommet);
 	public boolean estSommetColoré(int sommet);
 	public boolean estCouleurCorrecte(int sommet, int couleur);
 	public Set<Integer> couleursCorrectes(int sommet);
